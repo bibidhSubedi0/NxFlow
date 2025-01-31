@@ -23,6 +23,7 @@ premake5.lua.user
 
 # Ignore dependency directories (if you use any package managers or external libs)
 /vendor/
+/package
 
 # Ignore generated files
 *.sln
