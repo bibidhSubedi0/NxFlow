@@ -1,5 +1,8 @@
-#include "Training.h"
+#include "../../CoreLibrary/include/public/Training.h"
 #include <fstream>
+#include <vector>
+#include<memory>
+
 using namespace std;
 
 
@@ -22,45 +25,21 @@ int main()
 
 	};
 
+	double lr = 0.01 ;// { 0.01, 0.1, , 1 };
+	vector<int> topology = { (int)inputs[0].size(),8,8,(int)targets[0].size()};
 
-	/*vector<vector<double>> test{
-		{1, 0, 1, 0}, 
-		{1, 0, 1, 1}, 
-		{1, 1, 0, 0}, 
-		{1, 1, 0, 1}, 
-		{1, 1, 1, 0}, 
-		{1, 1, 1, 1}
-	};*/
+	std::unique_ptr<CoreLib::Training> Train= std::make_unique<CoreLib::Training>(800, lr, topology);
 
-	vector<double> learning_rates = { 0.01 };// { 0.01, 0.1, , 1 };
-	vector<vector<int>> topologies = { { (int)inputs[0].size(),8,8,(int)targets[0].size()} }; // { {4, 8, 4}, { 4,8,16,8,4 },  };
+	Train->trainModel(inputs, targets);
+	std::vector<double> output = Train->predict({ 1,0,1 });
 
-	Training* t = new Training(inputs, targets, learning_rates, topologies, 1000);
-	t->train_Network();
-
-
-	Network* best_network = t->get_best_network();
-	//double best_lr = t->get_best_lr();
-	//vector<int> best_topology = t->get_best_topology();
-
-	//cout << "Best Learning Rate : " << best_lr << endl;
-	//cout << "Best Topology : ";
-	//for (auto tp : best_topology) { cout << tp << " ";}
-	//cout << endl;
-
-	
-
-	for (int j = 0; j < inputs.size(); j++)
+	for (auto x : output)
 	{
-		best_network->setCurrentInput(inputs[j]);
-		best_network->setTarget(inputs[j]);
-		best_network->forwardPropogation();
-		best_network->printToConsole();
-		cout << endl;
-		cout << "-------------------------------------------------" << endl;
+		std::cout << x << "\t";
 	}
-	// Final weigts and biases
-	best_network->printWeightMatrices();
 
-	best_network->printBiases();
+
 }
+
+
+

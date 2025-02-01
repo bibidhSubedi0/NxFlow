@@ -1,4 +1,4 @@
-#include "TotalNetwork.h"
+#include "../include/core/TotalNetwork.h"
 #include <random>
 #include<iomanip>
 

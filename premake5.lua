@@ -17,12 +17,13 @@ includedirs {
 
 -- Static library project for CoreLibrary
 project "CoreLibrary"
-    kind "StaticLib"
+    kind "SharedLib"  -- Use SharedLib for DLL
     language "C++"
     location "CoreLibrary"
     files {
         "CoreLibrary/src/**.cpp",
-        "CoreLibrary/include/**.h"
+        "CoreLibrary/include/**.h",
+        "CoreLibrary/include/**.hpp"
     }
     -- Library specific settings
     includedirs {
@@ -36,20 +37,35 @@ project "CoreLibrary"
         optimize "On"
 
 
+
 -- Console application project for App
 project "App"
     kind "ConsoleApp"
     language "C++"
     location "App"
+
     files {
         "App/src/**.cpp",
-        "App/include/**.h"
+        "App/include/**.h",
+        "App/include/**.hpp"
     }
-    -- Linking CoreLibrary to the App project
-    links { "CoreLibrary" }
+
     includedirs {
         "App/include",
         "CoreLibrary/include"
+    }
+
+    libdirs {
+        "%{wks.location}/CoreLibrary/bin/%{cfg.buildcfg}"  -- Ensure correct CoreLibrary lib directory
+    }
+
+    links { "CoreLibrary" }
+
+    targetdir ("%{wks.location}/bin/%{cfg.buildcfg}")
+    objdir ("%{wks.location}/bin-int/%{cfg.buildcfg}")
+
+    postbuildcommands {
+        "{COPY} %{wks.location}/CoreLibrary/bin/%{cfg.buildcfg}/CoreLibrary.dll %{wks.location}/bin/%{cfg.buildcfg}"
     }
 
     filter "configurations:Debug"

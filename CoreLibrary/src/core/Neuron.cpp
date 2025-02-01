@@ -1,4 +1,4 @@
-#include"Neuron.h"
+#include "../include/core/Neuron.h"
 #include<math.h>
 using namespace std;
 
