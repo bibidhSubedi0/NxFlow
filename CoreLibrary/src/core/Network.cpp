@@ -42,6 +42,43 @@ Network::Network(vector<int> topology, double lr)
 }
 
 
+// Just Initilize the weights and bias matrices and substitute them later...
+Network::Network(std::vector<int> topology)
+{
+
+    this->topology = topology;
+    this->topologySize = this->topology.size();
+    this->learningRate = 0;
+
+    for (int i = 0; i < topologySize; i++)
+    {
+
+        // If it is last layer treat it seperately
+        if (i == topologySize - 1)
+        {
+            Layer* l = new Layer(topology[i], 1);
+            this->layers.push_back(l);
+        }
+
+        // If it is not last layer
+        else {
+            Layer* l = new Layer(topology[i]);
+            this->layers.push_back(l);
+        }
+    }
+
+
+    for (int i = 0; i < topologySize - 1; i++)
+    {
+        Matrix* mw = new Matrix(topology[i], topology[i + 1], false);
+        this->weightMatrices.push_back(mw);
+
+        Matrix* mb = new Matrix(1, topology[i + 1], false);
+        this->BaisMatrices.push_back(mb);
+    }
+    
+
+}
 
 
 void Network::setWeightMatrices(std::vector<std::vector<std::vector<double>>>& weights) {
@@ -199,20 +236,21 @@ vector<vector<vector<double>>> Network::getWeightMatricesVectorForm()
     vector<vector<vector<double>>> matrices;
     for (auto& x : this->weightMatrices)
     {
-        vector<vector<double>> rows;
+        vector<vector<double>> transposed(x->getNumCols(), vector<double>(x->getNumRow()));
+
         for (int row = 0; row < x->getNumRow(); row++)
         {
-            vector<double> cols;
             for (int col = 0; col < x->getNumCols(); col++)
             {
-                cols.push_back(x->getVal(row, col)); // Assuming `at(row, col)` retrieves the element
+                transposed[col][row] = x->getVal(row, col); // Store transposed value
             }
-            rows.push_back(cols);
         }
-        matrices.push_back(rows);
+
+        matrices.push_back(transposed);
     }
     return matrices;
 }
+
 
 vector<vector<double>> Network::getBiasesVectorForm()
 {
@@ -233,11 +271,21 @@ vector<vector<double>> Network::getBiasesVectorForm()
 
 
 
-void Network::forwardPropogation()
+void Network::forwardPropogationTrain()
 {
     for (int i = 0; i < layers.size() - 1; i++)
     {
-        layers[i + 1] = layers[i]->feedForward(weightMatrices[i], BaisMatrices[i], (i == 0),(i==layers.size()-2));
+        this->layers[i + 1] = this->layers[i]->feedForwardTrain(weightMatrices[i], BaisMatrices[i], (i == 0), (i == layers.size() - 2));
+
+    }
+}
+
+void Network::forwardPropogationPred()
+{
+    for (int i = 0; i < layers.size() - 1; i++)
+    {
+        this->layers[i + 1] = this->layers[i]->feedForwardPred(weightMatrices[i], BaisMatrices[i], (i == 0), (i == layers.size() - 2));
+
     }
 }
 

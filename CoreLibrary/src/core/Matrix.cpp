@@ -101,10 +101,10 @@ Matrix* Matrix::operator *(Matrix*& B)
         std::cout << "Invlaid Dimentions" << std::endl;
         cout << endl;
         cout << endl;
-        cout << " This Matrix " << endl;
+        cout << " This Matrix " << getNumRow() << " " << getNumCols() << endl;
         printToConsole();
 
-        cout << " Passed Matrix " << endl;
+        cout << " Passed Matrix " << B->getNumRow() << " " << B->getNumCols() << endl;
         B->printToConsole();
         cout << endl;
         cout << endl;

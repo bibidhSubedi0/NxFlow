@@ -10,7 +10,15 @@ namespace CoreLib {
 	Training::Training(int epochs, double learningRate, std::vector<int> topology) : m_epochs(epochs), m_learningRate(learningRate), m_topology(topology) {
 		this->Net = std::make_unique<Network>(topology, learningRate);
 	}
-	Training::Training(int epochs, double learningRate,const std::string filename) : m_epochs(epochs), m_learningRate(learningRate)
+
+	Training::Training()
+	{
+		this->m_epochs = 0;
+		this->m_learningRate = 0;
+		this->m_topology = {};
+	}
+
+	void Training::loadModel(const std::string filename)
 	{
 		std::vector<std::vector<std::vector<double>>> weights;// = Net->getWeightMatricesVectorForm();
 		std::vector<std::vector<double>> biases;// = Net->getBiasesVectorForm();
@@ -43,23 +51,22 @@ namespace CoreLib {
 		}
 
 		file.close();
-
-
-		this->Net = std::make_unique<Network>(topology, learningRate);
-
-
-
 		this->m_topology = topology;
-		// *this = new Network(this->topology, this->learningRate);
-		this->Net = std::make_unique<Network>(topology, learningRate);
+
+		this->Net = std::make_unique<Network>(this->m_topology);
+
 
 		this->Net->setBiasMatrices(biases);
 		this->Net->setWeightMatrices(weights);
 
 	}
+	// Load model directly through the Train Constructor
 
-	
+	/*Training::Training(int epochs, double learningRate, const std::string filename) : m_epochs(epochs), m_learningRate(learningRate)
+	{
 
+	}
+	*/
 	void Training::trainModel(const std::vector<std::vector<double>>& data, const std::vector<std::vector<double>>& labels) {
 		std::cout << "Training model for " << m_epochs << " epochs with learning rate " << m_learningRate << std::endl;
 
@@ -77,7 +84,7 @@ namespace CoreLib {
 				this->Net->setCurrentInput(data[j]);
 				this->Net->setTarget(labels[j]);
 
-				this->Net->forwardPropogation();
+				this->Net->forwardPropogationTrain();
 				this->Net->setErrors();
 				error_for_epoch += this->Net->getGlobalError();
 
@@ -97,14 +104,21 @@ namespace CoreLib {
 
 	std::vector<double> Training::predict(const std::vector<double>& data)
 	{
+		//// Verify the network
+		//std::cout << "-----------------------------------------------" << std::endl;
+		//Net->printToConsole();
+		//std::cout << "-----------------------------------------------" << std::endl;
+		//Net->printWeightMatrices();
+		//std::cout << "-----------------------------------------------" << std::endl;
+		//Net->printBiases();
+		//std::cout << "-----------------------------------------------" << std::endl;
 		Net->setCurrentInput(data);
-		Net->forwardPropogation();
-		Net->setErrors();
+		Net->forwardPropogationPred();
+		// Net->setErrors();
+		
 		
 
 		std::vector<double> result;
-
-		//  std::cout << "FUclkkxxxxxxxx" << std::endl;
 
 		for (int i = 0;i < this->m_topology.at(this->m_topology.size()-1);i++){
 			result.push_back(this->Net->GetLayer(this->m_topology.size() - 1)->getNeuron(i)->getActivatedVal());
@@ -142,5 +156,4 @@ namespace CoreLib {
 
 	}
 
-	
 } // namespace CoreLib

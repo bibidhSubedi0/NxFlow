@@ -60,7 +60,7 @@ Matrix* Layer::convertTOMatrixDerivedVal()
     return m;
 }
 
-Layer* Layer::feedForward(Matrix* Weights, Matrix* bias, bool isFirst, bool isLast)
+Layer* Layer::feedForwardTrain(Matrix* Weights, Matrix* bias, bool isFirst, bool isLast)
 {
 
 
@@ -77,19 +77,10 @@ Layer* Layer::feedForward(Matrix* Weights, Matrix* bias, bool isFirst, bool isLa
     Matrix* z = *this_layer_val * Weights;
     Matrix* zWithBias = *z + bias;
 
-    //cout << "Layer informations : " << endl;
-    //cout << " Is first layer : " << isFirst << endl;
-    //cout << " Is last layer : " << isLast << endl;
-    //cout << "Weight Matrix : " << endl;
-    //Weights->printToConsole();
-    //cout << "\nBias Matrix : " << endl;
-    //bias->printToConsole();
-    //cout << "Calculated Values : " << endl;
-    //z->printToConsole();
 
     // Put the Calculated Values in the Layer in form of vector rather then matrix
     if (!isLast) {
-       
+
         Layer* temp = new Layer(Weights->getNumCols());
 
         for (int i = 0; i < Weights->getNumCols(); i++)
@@ -98,20 +89,22 @@ Layer* Layer::feedForward(Matrix* Weights, Matrix* bias, bool isFirst, bool isLa
             temp->getNeuron(i)->Activate();
             temp->getNeuron(i)->Derive();
         }
-        
+
         return temp;
     }
     else // Last ho vane
-    {   
+    {
 
 
 
         // Last ho vane apply softmax instead of this.......................
-        Layer* temp = new Layer(Weights->getNumCols(),1);
+        Layer* temp = new Layer(Weights->getNumCols(), 1);
         for (int i = 0; i < Weights->getNumCols(); i++)
         {
             temp->setVal(i, zWithBias->getVal(0, i));
         }
+
+        
 
         // Compute exponentials and their sum
 
@@ -129,12 +122,84 @@ Layer* Layer::feedForward(Matrix* Weights, Matrix* bias, bool isFirst, bool isLa
         for (size_t i = 0; i < temp->getNeurons().size(); i++) {
             temp->setActivatedVal(i, expVals[i] / sumExp);
         }
-  
+
         return temp;
-        
+
     }
 
 }
+
+Layer* Layer::feedForwardPred(Matrix* Weights, Matrix* bias, bool isFirst, bool isLast)
+{
+
+
+    Matrix* this_layer_val;
+
+    if (isFirst)
+    {
+        this_layer_val = convertTOMatrixVal();
+    }
+    else {
+        this_layer_val = convertTOMatrixActivatedVal();
+    }
+
+    Weights = Weights->tranpose();
+
+    Matrix* z = *this_layer_val * Weights;
+    Matrix* zWithBias = *z + bias;
+
+
+    // Put the Calculated Values in the Layer in form of vector rather then matrix
+    if (!isLast) {
+
+        Layer* temp = new Layer(Weights->getNumCols());
+
+        for (int i = 0; i < Weights->getNumCols(); i++)
+        {
+            temp->setVal(i, zWithBias->getVal(0, i));
+            temp->getNeuron(i)->Activate();
+            temp->getNeuron(i)->Derive();
+        }
+
+        return temp;
+    }
+    else // Last ho vane
+    {
+
+
+
+        // Last ho vane apply softmax instead of this.......................
+        Layer* temp = new Layer(Weights->getNumCols(), 1);
+        for (int i = 0; i < Weights->getNumCols(); i++)
+        {
+            temp->setVal(i, zWithBias->getVal(0, i));
+        }
+
+
+
+        // Compute exponentials and their sum
+
+        double maxVal = -INFINITY;
+        for (const auto& neuron : temp->getNeurons())
+            maxVal = maxVal > neuron->getVal() ? maxVal : neuron->getVal();; // Avoid overflow by normalizing with max
+        vector<double> expVals(temp->getNeurons().size());
+        for (size_t i = 0; i < temp->getNeurons().size(); i++)
+            expVals[i] = exp(temp->getNeurons().at(i)->getVal() - maxVal);
+
+        double sumExp = std::accumulate(expVals.begin(), expVals.end(), 0.0);
+
+
+
+        for (size_t i = 0; i < temp->getNeurons().size(); i++) {
+            temp->setActivatedVal(i, expVals[i] / sumExp);
+        }
+
+        return temp;
+
+    }
+
+}
+
 
 Neuron* Layer::getNeuron(int pos)
 {

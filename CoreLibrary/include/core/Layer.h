@@ -21,7 +21,8 @@ public:
     Matrix* convertTOMatrixVal();
     Matrix* convertTOMatrixActivatedVal();
     Matrix* convertTOMatrixDerivedVal();
-    Layer* feedForward(Matrix* LastWeights, Matrix* LastBias, bool isFirst,bool isLast);
+    Layer* feedForwardTrain(Matrix* LastWeights, Matrix* LastBias, bool isFirst, bool isLast);
+    Layer* feedForwardPred(Matrix* LastWeights, Matrix* LastBias, bool isFirst, bool isLast);
     vector<Neuron*> getNeurons();
     Neuron* getNeuron(int);
     int getSize();

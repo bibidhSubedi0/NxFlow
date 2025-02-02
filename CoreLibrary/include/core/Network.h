@@ -11,12 +11,13 @@ class Network
 {
 public:
     Network(vector<int> topology, double learningRate);
+    Network(vector<int> topology);
     void setCurrentInput(vector<double> input);
     void printToConsole();
     void printWeightMatrices();
     void printBiases();
-    void forwardPropogation();
-    void backPropogation();
+    void forwardPropogationTrain();
+    void forwardPropogationPred();
     Layer* GetLayer(int nth);
 
     void setErrors();
