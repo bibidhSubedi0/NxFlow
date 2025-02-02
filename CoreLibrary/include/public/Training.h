@@ -26,6 +26,10 @@ namespace CoreLib {
 
         std::vector<double> predict(const std::vector<double>& data);
 
+        void saveModel(const std::string);
+
+        void loadModel(const std::string);
+
     private:
         int m_epochs;
         double m_learningRate; 

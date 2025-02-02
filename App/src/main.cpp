@@ -28,7 +28,7 @@ int main()
 	double lr = 0.01 ;// { 0.01, 0.1, , 1 };
 	vector<int> topology = { (int)inputs[0].size(),8,8,(int)targets[0].size()};
 
-	std::unique_ptr<CoreLib::Training> Train= std::make_unique<CoreLib::Training>(800, lr, topology);
+	std::unique_ptr<CoreLib::Training> Train= std::make_unique<CoreLib::Training>(100, lr, topology);
 
 	Train->trainModel(inputs, targets);
 	std::vector<double> output = Train->predict({ 1,0,1 });
@@ -38,7 +38,7 @@ int main()
 		std::cout << x << "\t";
 	}
 
-
+	Train->saveModel("model.bin");
 }
 
 

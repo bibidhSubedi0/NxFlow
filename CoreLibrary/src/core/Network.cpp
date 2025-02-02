@@ -161,6 +161,43 @@ void Network::printWeightMatrices()
     }
 }
 
+vector<vector<vector<double>>> Network::getWeightMatricesVectorForm()
+{
+    vector<vector<vector<double>>> matrices;
+    for (auto& x : this->weightMatrices)
+    {
+        vector<vector<double>> rows;
+        for (int row = 0; row < x->getNumRow(); row++)
+        {
+            vector<double> cols;
+            for (int col = 0; col < x->getNumCols(); col++)
+            {
+                cols.push_back(x->getVal(row, col)); // Assuming `at(row, col)` retrieves the element
+            }
+            rows.push_back(cols);
+        }
+        matrices.push_back(rows);
+    }
+    return matrices;
+}
+
+vector<vector<double>> Network::getBiasesVectorForm()
+{
+    vector<vector<double>> biasesVector;
+    for (auto& b : this->BaisMatrices)
+    {
+        vector<double> layerBiases;
+        for (int col = 0;col<b->getNumCols();col++)
+        {
+            layerBiases.push_back(b->getVal(0, col));
+        }
+        biasesVector.push_back(layerBiases);
+    }
+    return biasesVector;
+}
+
+
+
 void Network::forwardPropogation()
 {
     for (int i = 0; i < layers.size() - 1; i++)

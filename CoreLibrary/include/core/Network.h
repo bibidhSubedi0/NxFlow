@@ -34,7 +34,8 @@ public:
     vector<Matrix*> gardientComputation();
     vector<Matrix*> averageGradients(vector<vector<Matrix*>>);
     void saveThisError(double error);
-
+    vector<vector<vector<double>>> getWeightMatricesVectorForm();
+    vector<vector<double>> getBiasesVectorForm();
 
 private:
     int topologySize;

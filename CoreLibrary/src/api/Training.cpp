@@ -2,6 +2,7 @@
 #include <../include/public/Training.h>
 
 #include <iostream>
+#include<fstream>
 #include<memory>
 
 namespace CoreLib {
@@ -62,5 +63,69 @@ namespace CoreLib {
 		return result;
 	}
 	
+	void Training::saveModel(const std::string filename)
+	{
+		// this->topology
+		std::vector<std::vector<std::vector<double>>> weights = Net->getWeightMatricesVectorForm();	
+		std::vector<std::vector<double>> biases = Net->getBiasesVectorForm();
 
+		std::ofstream file(filename, std::ios::binary);
+		if (!file) {
+			std::cerr << "Error opening file for writing!\n";
+			return;
+		}
+
+		int layers = topology.size();
+		file.write(reinterpret_cast<const char*>(&layers), sizeof(int));
+		file.write(reinterpret_cast<const char*>(topology.data()), layers * sizeof(int));
+
+		for (const auto& layerWeights : weights) {
+			for (const auto& neuronWeights : layerWeights) {
+				file.write(reinterpret_cast<const char*>(neuronWeights.data()), neuronWeights.size() * sizeof(double));
+			}
+		}
+
+		for (const auto& layerBiases : biases) {
+			file.write(reinterpret_cast<const char*>(layerBiases.data()), layerBiases.size() * sizeof(double));
+		}
+
+		file.close();
+
+	}
+
+	void Training::loadModel(const std::string filename)
+	{
+		std::vector<std::vector<std::vector<double>>> weights;// = Net->getWeightMatricesVectorForm();
+		std::vector<std::vector<double>> biases;// = Net->getBiasesVectorForm();
+
+
+		std::ifstream file(filename, std::ios::binary);
+		if (!file) {
+			std::cerr << "Error opening file for reading!\n";
+			return;
+		}
+
+		int layers;
+		file.read(reinterpret_cast<char*>(&layers), sizeof(int));
+		topology.resize(layers);
+		file.read(reinterpret_cast<char*>(topology.data()), layers * sizeof(int));
+
+		weights.resize(layers - 1);
+		biases.resize(layers - 1);
+
+		for (int i = 0; i < layers - 1; ++i) {
+			weights[i].resize(topology[i + 1], std::vector<double>(topology[i]));
+			for (auto& neuronWeights : weights[i]) {
+				file.read(reinterpret_cast<char*>(neuronWeights.data()), neuronWeights.size() * sizeof(double));
+			}
+		}
+
+		for (int i = 0; i < layers - 1; ++i) {
+			biases[i].resize(topology[i + 1]);
+			file.read(reinterpret_cast<char*>(biases[i].data()), biases[i].size() * sizeof(double));
+		}
+
+		file.close();
+	}
+	
 } // namespace CoreLib
