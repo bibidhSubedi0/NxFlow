@@ -21,6 +21,8 @@ namespace CoreLib {
     public:
         Training(int epochs, double learningRate, std::vector<int> topology);
 
+        Training(int epochs, double learningRate,const std::string filename); // To load the modal Directly
+
         void trainModel(const std::vector<std::vector<double>>& data,
             const std::vector<std::vector<double>>& labels);
 
@@ -34,7 +36,7 @@ namespace CoreLib {
         int m_epochs;
         double m_learningRate; 
         std::unique_ptr<Network> Net;
-        std::vector<int> topology;
+        std::vector<int> m_topology;
     }; 
 
 } // namespace CoreLib

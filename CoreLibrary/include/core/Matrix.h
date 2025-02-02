@@ -11,6 +11,7 @@ class Matrix
 public:
 
     Matrix(int numRows, int numCols, bool isRandom);
+    Matrix(const std::vector<std::vector<double>>& values);
     double genRandomNumber();
     Matrix* tranpose();
     Matrix* operator *(Matrix*& A);

@@ -42,6 +42,39 @@ Network::Network(vector<int> topology, double lr)
 }
 
 
+
+
+void Network::setWeightMatrices(std::vector<std::vector<std::vector<double>>>& weights) {
+    
+    for (auto& mat : this->weightMatrices) {
+        delete mat;
+    }
+    this->weightMatrices.clear();
+
+    for (const auto& matrix : weights) {
+        this->weightMatrices.push_back(new Matrix(matrix));
+    }
+
+}
+void Network::setBiasMatrices(std::vector<std::vector<double>>& biases) {
+
+    for (auto& mat : this->BaisMatrices) {
+        delete mat;
+    }
+    this->BaisMatrices.clear();
+
+    // Convert vector<vector<double>> into Matrix* (row vector form)
+    for (const auto& bias : biases) {
+        Matrix* biasMatrix = new Matrix(1, bias.size(), false);
+        for (int col = 0; col < bias.size(); col++) {
+            biasMatrix->setVal(0, col, bias[col]); // Set values in row 0
+        }
+        this->BaisMatrices.push_back(biasMatrix); 
+    }
+}
+
+
+
 double Network::getGlobalError()
 {
     return this->error;
@@ -195,6 +228,8 @@ vector<vector<double>> Network::getBiasesVectorForm()
     }
     return biasesVector;
 }
+
+
 
 
 

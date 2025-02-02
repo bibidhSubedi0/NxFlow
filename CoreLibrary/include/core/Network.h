@@ -36,6 +36,10 @@ public:
     void saveThisError(double error);
     vector<vector<vector<double>>> getWeightMatricesVectorForm();
     vector<vector<double>> getBiasesVectorForm();
+    void setNetworkFromModel(std::vector<int>& topologyLoaded, std::vector<std::vector<std::vector<double>>>& weights, std::vector<std::vector<double>>& biases, const std::string& filename);
+
+    void setWeightMatrices(std::vector<std::vector<std::vector<double>>>& weights);
+    void setBiasMatrices(std::vector<std::vector<double>>& biases);
 
 private:
     int topologySize;

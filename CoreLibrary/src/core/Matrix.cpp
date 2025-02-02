@@ -22,6 +22,13 @@ Matrix::Matrix(int numRows, int numCols, bool isRandom = true)
 }
 
 
+Matrix::Matrix(const std::vector<std::vector<double>>& values) { 
+    numRows = values.size();
+    numCols = values.empty() ? 0 : values[0].size();
+    this->values = values;
+}
+
+
 double Matrix::genRandomNumber()
 {
     std::random_device rd;
